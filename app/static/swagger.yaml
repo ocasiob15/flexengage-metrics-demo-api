@@ -1,0 +1,235 @@
+swagger: "2.0"
+info:
+  description: "This is a "
+  version: "1.0.0"
+  title: "FlexEngage DEMO Metrics API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "brian.ocasio@flexengage.com"
+host: "metric.swagger.io"
+basePath: "/v2"
+tags:
+- name: "metrics"
+  description: ""
+schemes:
+- "https"
+- "http"
+paths:
+  /metrics:
+    post:
+      tags:
+      - "metrics"
+      summary: "Create a new metric"
+      description: ""
+      operationId: "addMetric"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Metric object"
+        required: true
+        schema:
+          $ref: "#/definitions/MetricsRequest"
+      responses:
+        "201":
+          description: "Metric created successfully"
+        "405":
+          description: "Invalid input"
+    get:
+      tags:
+      - "metrics"
+      summary: "Get all metrics"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "getAllMetrics"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/MetricsResponse"
+        "400":
+          description: "Invalid status value"
+  /metrics/{id}:
+    put:
+      tags:
+      - "metrics"
+      summary: "Update an existing metrics name"
+      description: ""
+      operationId: "updateMetric"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Metric name to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/MetricsRequest"
+      - in: "path"
+        name: "id"
+        description: "Metric id to be updated"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "Successfully updated metric"
+          schema:
+              $ref: "#/definitions/Metric"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Metric not found"
+        "405":
+          description: "Validation exception"
+    get:
+      tags:
+      - "metrics"
+      summary: "Get a single metric by id"
+      description: ""
+      operationId: "getMetricById"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "Metric to be returned"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Metric"
+        "404":
+          description: "Metric does not exist"
+    delete:
+      tags:
+      - "metrics"
+      summary: "Deletes a metric"
+      description: ""
+      operationId: "deleteMetric"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "Metric id to delete"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "Deleted metric successfully"
+        "404":
+          description: "Metric not found"
+  /metrics/{id}/recordset:
+    post:
+      tags:
+      - "metrics"
+      summary: "Add a new value to the metric recordset"
+      description: ""
+      operationId: "addMetricValue"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Metric object"
+        required: true
+        schema:
+          $ref: "#/definitions/MetricRecordsetRequest"
+      - in: "path"
+        name: "id"
+        description: "Metric id"
+        required: true
+        type: "integer"
+      responses:
+        "201":
+          description: "Value added successfully"
+          schema:
+            $ref: "#/definitions/MetricValue"
+        "404":
+          description: "Metric not found"
+    get:
+      tags:
+      - "metrics"
+      summary: "Get all metrics"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "getRecordsetForMetric"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "Metric id"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MetricRecordsetResponse"
+        "404":
+          description: "Metric not found"
+definitions:
+  Metric:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      timestamp:
+        type: "string"
+        format: "date-time"
+  MetricsRequest:
+    type: "object"
+    required:
+      - "name"
+    properties:
+      name:
+        type: "string"
+        example: "completed requests"
+  MetricsResponse:
+    type: "object"
+    properties:
+      metrics:
+        type: "array"
+        items:
+          $ref: "#/definitions/Metric"
+  MetricValue:
+    type: "object"
+    properties:
+      value:
+        type: "number"
+        example: 12.3
+      timestamp:
+        type: "string"
+        format: "date-time"
+  MetricRecordsetResponse:
+    type: "object"
+    properties:
+      values:
+        type: "array"
+        items:
+          $ref: "#/definitions/MetricValue"
+  MetricRecordsetRequest:
+    type: "object"
+    required:
+      - "name"
+    properties:
+      value:
+        type: "number"
+        example: 12.3
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
